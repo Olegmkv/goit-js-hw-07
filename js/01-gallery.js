@@ -1,4 +1,5 @@
 import { galleryItems } from './gallery-items.js';
+let instance = {};
 
 const galleryImage = document.querySelector(".gallery");
 
@@ -22,8 +23,9 @@ galleryImage.insertAdjacentHTML("afterbegin", markingGalery);
 // ставимо слухача на всю галерею
 galleryImage.addEventListener('click', onClickGalleryItems);
 
-// обробка кліків на галереї
+// обробка кліків по галереї
 function onClickGalleryItems(evt) {
+  evt.preventDefault();
     if (!evt.target.classList.contains('gallery__image')) {
         return;
     }
@@ -32,8 +34,15 @@ function onClickGalleryItems(evt) {
 
 // вивід понорозмірного зображення бібліотекою Lightbox
 function showFullImage(image) {
-    const instance = basicLightbox.create(`
+    instance = basicLightbox.create(`
          <img src="${image}" width="800" height="600">
      `);
-    instance.show();
+  instance.show(() => document.addEventListener("keydown",onClickEscape));
+}
+
+// обробка натискання клавиші Escape
+function onClickEscape(evt) { 
+  if (evt.code === 'Escape') {
+    instance.close(() => document.removeEventListener("keydown",onClickEscape));
+  }
 }
